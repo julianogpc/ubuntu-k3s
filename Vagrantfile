@@ -54,7 +54,7 @@ Vagrant.configure(2) do |config|
 
         node.vm.synced_folder ".", "/vagrant", type: "virtualbox", :mount_options => ["dmode=775","fmode=644"]
 
-        node.vm.provision "install", type: "ansible_local", do |ansible|
+        node.vm.provision "install", type: "ansible_local" do |ansible|
           ansible.playbook = "install.yml"
           ansible.install_mode = $ansible_install_mode
           ansible.version = $ansible_version
