@@ -1,0 +1,3 @@
+---
+  - name: Install k3s
+    shell: curl -sfL {{ k3s_script_url }} | INSTALL_K3S_EXEC="--no-deploy=traefik --no-deploy=servicelb --data-dir={{ k3s_data_dir }} --node-ip={{ ansible_ssh_host }}" sh -

@@ -1,0 +1,44 @@
+---
+  - name: Install Requirements
+    apt: 
+      name: 
+      - python3-pip
+      - python-netaddr
+
+  - name: Kubeconfig k3s
+    shell: cat /etc/rancher/k3s/k3s.yaml
+    register: result
+
+  - name: Create Directory
+    local_action: 
+      module: file
+      path: "{{ playbook_dir }}/.kube/"
+      state: directory
+    become: no
+
+  - name: Save Kubeconfig
+    local_action: 
+      module: copy
+      content: "{{ result.stdout }}"
+      dest: "{{ playbook_dir }}/.kube/{{ ansible_nodename }}.yml"
+    become: no
+
+  - name: Set public_ip from ip_range
+    set_fact:
+      public_ip: "{{ ansible_all_ipv4_addresses | select('match', ip_range) | list | first }}"
+    when: ip_range is defined
+    become: no
+
+  - name: Set public_ip from ansible_ssh_host
+    set_fact:
+      public_ip: "{{ ansible_ssh_host }}"
+    when: public_ip is not defined
+    become: no
+
+  - name: Change Server IP
+    local_action:
+      module: replace
+      dest: "{{ playbook_dir }}/.kube/{{ ansible_nodename }}.yml"
+      regexp: '^(\W+server:) https://localhost(:6443)$'
+      replace: \1 https://{{ public_ip }}\2
+    become: no

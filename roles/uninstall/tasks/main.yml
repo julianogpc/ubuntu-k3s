@@ -1,0 +1,16 @@
+---
+  - name: Stop k3s Service
+    service:
+      name: k3s
+      state: stopped
+
+  - name: Uninstall
+    shell: k3s-uninstall.sh
+
+  - name: Uninstall
+    shell: find /data/k3s/ -exec umount {} \;
+
+  - name: Delete Directory {{ k3s_data_dir }}
+    file:
+      path: "{{ k3s_data_dir }}"
+      state: absent
