@@ -1,5 +1,7 @@
 # Ubuntu K3S
 ```
+$ git clone https://github.com/julianogpc/ubuntu-k3s
+$ cd ubuntu-k3s
 $ vagrant up
 ```
 
