@@ -42,8 +42,9 @@ Vagrant.configure(2) do |config|
 
         node.vm.network "private_network", ip: ip
 
-        node.vm.network "forwarded_port", guest: 80, host: 80
-        node.vm.network "forwarded_port", guest: 443, host: 443
+        node.vm.network "forwarded_port", guest: 80, host: 8080
+        node.vm.network "forwarded_port", guest: 443, host: 8443
+        node.vm.network "forwarded_port", guest: 8084, host: 8084
         node.vm.network "forwarded_port", guest: 6443, host: 6443
 
         for node_port in 30000..32767
@@ -59,6 +60,9 @@ Vagrant.configure(2) do |config|
           ansible.install_mode = $ansible_install_mode
           ansible.version = $ansible_version
           ansible.compatibility_mode = $compatibility_mode
+          ansible.extra_vars = {
+            ip_range: $ip_range
+          }
         end
 
         node.vm.provision "uninstall", type: "ansible_local", run: "never" do |ansible|
@@ -73,6 +77,9 @@ Vagrant.configure(2) do |config|
           ansible.install_mode = $ansible_install_mode
           ansible.version = $ansible_version
           ansible.compatibility_mode = $compatibility_mode
+          ansible.extra_vars = {
+            ip_range: $ip_range
+          }
         end
     end
   end

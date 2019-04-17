@@ -1,3 +1,18 @@
 ---
-  - name: Install k3s
-    shell: curl -sfL {{ k3s_script_url }} | INSTALL_K3S_EXEC="--no-deploy=traefik --no-deploy=servicelb --data-dir={{ k3s_data_dir }} --node-ip={{ ansible_ssh_host }}" sh -
+  - name: Set public_ip from ip_range
+    set_fact:
+      public_ip: "{{ ansible_all_ipv4_addresses | select('match', ip_range) | list | first }}"
+    when: ip_range is defined
+    become: no
+
+  - name: Set public_ip from ansible_ssh_host
+    set_fact:
+      public_ip: "{{ ansible_ssh_host }}"
+    when: public_ip is not defined
+    become: no
+
+  - name: Install k3s {{ k3s_version }}
+    shell: curl -sfL {{ k3s_script_url }} | INSTALL_K3S_VERSION="{{ k3s_version }}" INSTALL_K3S_EXEC="--no-deploy=traefik --no-deploy=servicelb --data-dir={{ k3s_data_dir }} --node-ip={{ public_ip }} --kubelet-arg=\"address=0.0.0.0\"" sh -
+
+  - name: Apply Metrics Server
+    shell: kubectl apply -f {{ k3s_metrics_server_dir }}
