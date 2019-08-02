@@ -2,6 +2,7 @@
 ```
 $ git clone https://github.com/julianogpc/ubuntu-k3s
 $ cd ubuntu-k3s
+$ vagrant plugin install vagrant-vbguest
 $ vagrant up
 ```
 
